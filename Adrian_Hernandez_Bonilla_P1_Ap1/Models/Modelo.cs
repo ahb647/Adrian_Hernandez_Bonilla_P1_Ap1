@@ -7,5 +7,7 @@ namespace Adrian_Hernandez_Bonilla_P1_Ap1.Models
         [Key]
         public int Id { get; set; } 
 
+        public string Nombre { get; set; } 
+
     }
 }

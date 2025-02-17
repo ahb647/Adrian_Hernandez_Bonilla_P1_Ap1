@@ -1,14 +1,156 @@
-﻿@page "/Models/Index"
+﻿@page "/Aportes/IndexAportes"
 @using Adrian_Hernandez_Bonilla_P1_Ap1.Models
 @using Adrian_Hernandez_Bonilla_P1_Ap1.Services
-@inject AportesService Service
+@using System.Globalization
+@inject AportesService aportesService
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
 
+<PageTitle>Registro de Aportes</PageTitle>
 
-<h3>Index</h3>
+<div class="container">
+    <div class="card shadow-lg ">
+        <div class="card-header space-between d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Registro de sistemas</h5>
+            <div class="d-flex gap-2">
+                <select class="form-select w-auto" @bind="criterioBusqueda">
+                    <option value="AporteId">ID</option>
+
+                </select>
+
+                @if (criterioBusqueda == "ID")
+                {
+
+                    <input type="number" class="form-control" placeholder="Buscar por Id " @bind="filtroBusqueda" @oninput="ActualizarFiltroBusqueda" />
+
+                }
+
+            </div>
+
+            <a href="/Aportes/CreateAportes" class="btn btn-primary">
+                <span class=" bi bi-plus-square"></span> Crear
+            </a>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table table-striped text-black">
+                    <tr>
+                        <td>Id`</td>
+                        <td>Persona</td>
+                        <td>observacion</td>
+                        <td>Aporte(RD$)</td>
+                        <td>Fecha</td>
+                        <td>Opciones</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (AportesFiltrados.Any())
+                    {
+                        @foreach (var aportes in AportesFiltrados)
+                        {
+                            <tr>
+                                <td>@aportes.AporteId</td>
+                                <td>@aportes.Persona</td>
+                                <td>@aportes.Observacion</td>
+                                <td>@aportes.Monto.ToString("C", CultureInfo.CreateSpecificCulture("es-Do"))</td>
+                                <td>@aportes.DateTime.ToString("yyyy-MM-dd")</td>
+                                <td class="text-center">
+                                    <a href="EditSistemas/@aportes.AporteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                                    <a href="DeleteSistemas/@aportes.AporteId" class="btn btn-outline-danger bi bi-trash"></a>
+
+
+                                </td>
+                            </tr>
+                        }
+
+                    }
+                    else
+                    {
+
+
+                        <tr>
+                            <td colspan="5" class="text-center">No hay sistemas o no coinciden con la búsqueda.</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="card-footer d-flex justify-content-between ">
+            <label>Total Aportes:@AportesFiltrados.Count()</label>
+            <label class="fw-bold">Monto total acomulado: @MontoTotal.ToString("C", CultureInfo.CreateSpecificCulture("es-Do"))</label>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
 
 @code {
 
+    private string filtroBusqueda { get; set; } = "";
+    private string criterioBusqueda { get; set; } = "ID";
+
+    private List<Aportes> ListaAportes { get; set; } = new List<Aportes>();
+    private List<Aportes> AportesFiltrados { get; set; } = new List<Aportes>();
+    private decimal MontoTotal { get; set; } = 0m; // Cambio de double a decimal
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        ListaAportes = await aportesService.Listar(m => true);
+
+        
+        AportesFiltrados = new List<Aportes>(ListaAportes);
+
+        CalcularMontoTotal();
+    }
+
+    private void ActualizarFiltroBusqueda(ChangeEventArgs e)
+    {
+        filtroBusqueda = e.Value?.ToString() ?? "";
+
+        // Filtrar según el criterio seleccionado
+        if (criterioBusqueda == "ID" && int.TryParse(filtroBusqueda, out int AporteId))
+        {
+           AportesFiltrados = ListaAportes.Where(a => a.AporteId == AporteId).ToList();
+        }
+        else if (criterioBusqueda == "Nombre")
+        {
+            AportesFiltrados = ListaAportes.Where(a =>
+                a.Persona.Contains(filtroBusqueda, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else if (criterioBusqueda == "Fecha" && DateTime.TryParse(filtroBusqueda, out DateTime fecha))
+        {
+            AportesFiltrados = ListaAportes.Where(a => a.DateTime.Date == fecha.Date).ToList();
+        }
+        else
+        {
+            AportesFiltrados = new List<Aportes>(ListaAportes);
+        }
+
+        // Actualizar monto total
+        CalcularMontoTotal();
+
+
+        StateHasChanged();// Forzar actualización de la UI
+    }
+
+    private void CalcularMontoTotal()
+    {
+
+        MontoTotal = AportesFiltrados.Sum(m => (decimal)m.Monto);
+    }
 }
+
+
+

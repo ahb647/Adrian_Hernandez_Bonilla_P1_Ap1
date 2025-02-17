@@ -9,7 +9,7 @@ namespace Adrian_Hernandez_Bonilla_P1_Ap1.Context
         {
             // Configura el DbContext usando la cadena de conexión de Somee.
             var optionsBuilder = new DbContextOptionsBuilder<Contexto>();
-            optionsBuilder.UseSqlServer("workstation id=AdrianDB.mssql.somee.com;packet size=4096;user id=AHB_SQLLogin_1;pwd=419y65tsvd;data source=AdrianDB.mssql.somee.com;persist security info=False;initial catalog=AdrianDB;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("workstation id=Examen_Aplicada_1.mssql.somee.com;packet size=4096;user id=Ahb32_SQLLogin_1;pwd=np7poppci4;data source=Examen_Aplicada_1.mssql.somee.com;persist security info=False;initial catalog=Examen_Aplicada_1;TrustServerCertificate=True");
 
             return new Contexto(optionsBuilder.Options);
         }

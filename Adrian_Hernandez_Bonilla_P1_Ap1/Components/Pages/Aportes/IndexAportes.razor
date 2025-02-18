@@ -14,11 +14,7 @@
         <div class="card-header space-between d-flex justify-content-between align-items-center">
             <h5 class="card-title">Registro de sistemas</h5>
             <div class="d-flex gap-2">
-                <select class="form-select w-auto" @bind="criterioBusqueda">
-                    <option value="AporteId">ID</option>
-
-                </select>
-
+            
                 @if (criterioBusqueda == "ID")
                 {
 
@@ -56,8 +52,8 @@
                                 <td>@aportes.Monto.ToString("C", CultureInfo.CreateSpecificCulture("es-Do"))</td>
                                 <td>@aportes.DateTime.ToString("yyyy-MM-dd")</td>
                                 <td class="text-center">
-                                    <a href="EditSistemas/@aportes.AporteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                                    <a href="DeleteSistemas/@aportes.AporteId" class="btn btn-outline-danger bi bi-trash"></a>
+                                    <a href="EditAportes/@aportes.AporteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                                    <a href="DeleteAportes/@aportes.AporteId" class="btn btn-outline-danger bi bi-trash"></a>
 
 
                                 </td>
@@ -70,7 +66,7 @@
 
 
                         <tr>
-                            <td colspan="5" class="text-center">No hay sistemas o no coinciden con la búsqueda.</td>
+                            <td colspan="5" class="text-center">No hay Aportes o no coinciden con la búsqueda.</td>
                         </tr>
                     }
 

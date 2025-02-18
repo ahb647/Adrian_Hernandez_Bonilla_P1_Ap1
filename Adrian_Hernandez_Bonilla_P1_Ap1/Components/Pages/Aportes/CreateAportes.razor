@@ -1,0 +1,113 @@
+﻿@page "/Aportes/CreateAportes"
+@using Adrian_Hernandez_Bonilla_P1_Ap1.Models
+@using Adrian_Hernandez_Bonilla_P1_Ap1.Services
+@using System.Text.RegularExpressions
+@inject AportesService aportesService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+
+
+<PageTitle>Crear Aporte</PageTitle>
+
+<EditForm Model="@aportes" OnValidSubmit="@OnValidSubmit">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+
+    <div class="container">
+        <div class="card shadow-lg ">
+            <div class="card card-header text-center">
+                <h5 class="card-title ">Crear Aporte</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="mb-3 ">
+                    <label class="form-label "><strong>Nombre del contribuyente</strong></label>
+                    <InputText class="form-control" @bind-Value=@aportes.Persona />
+                    <ValidationMessage for="@(()  => aportes.Persona )" />
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-3 ">
+                        <label class="form-label "><strong>Observacion</strong></label>
+                        <InputText class="form-control" @bind-Value=@aportes.Observacion />
+                        <ValidationMessage for="@(()  => aportes.Observacion )" />
+                    </div>
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong> Monto (RD$)</strong></label>
+                    <div class="input-group">
+                        <span class="input-group-text">RD$</span>
+                        <InputNumber class="form-control" @bind-Value="@aportes.Monto" step="0.01" />
+                    </div>
+                    <ValidationMessage For="@(() => aportes.Monto)" />
+                </div>
+
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha</strong></label>
+                    <InputDate class="form-control" @bind-Value="@aportes.DateTime" />
+                    <ValidationMessage For="@(() => aportes.DateTime)" />
+                </div>
+
+
+                @* Mostrar error si ocurre *@
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger mt-2">
+                        <strong>Error:</strong> @ErrorMessage
+                    </div>
+                }
+            
+          
+            <div class="card-footer text-center mt-2">
+                <a href="/Aportes/IndexAportes" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-floppy"></i> Guardar</button>
+            </div>
+
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+
+
+
+@code {
+    public Adrian_Hernandez_Bonilla_P1_Ap1.Models.Aportes aportes { get; set; } = new Adrian_Hernandez_Bonilla_P1_Ap1.Models.Aportes();
+
+    public string ErrorMessage { get; set; } = string.Empty;
+
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            
+     
+
+            if (await aportesService.Guardar(aportes))
+            {
+                aportes = new Aportes(); 
+                ErrorMessage = string.Empty;
+                navigationManager.NavigateTo("Aportes/IndexAportes");
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception)
+        {
+            ErrorMessage = "Ocurrió un error inesperado. Por favor, intenta nuevamente.";
+        }
+    }
+}
+ 
+}
+
+

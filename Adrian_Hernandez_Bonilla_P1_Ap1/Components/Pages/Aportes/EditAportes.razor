@@ -1,0 +1,131 @@
+﻿@page "/Aportes/EditAportes"
+@page "/EditAportes/{AporteId:int}"
+@using Adrian_Hernandez_Bonilla_P1_Ap1.Models
+@using Adrian_Hernandez_Bonilla_P1_Ap1.Services
+@inject AportesService aportesService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+
+<PageTitle>@Titulo</PageTitle>
+
+<EditForm Model="@aportes" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h3 class="card-title">@Titulo</h3>
+            </div>
+
+            <div class="card-body">
+                
+                <label><strong>Nombre del contribuyente</strong></label>
+                <div class="input-group mb-3">
+                    <InputText @bind-Value="@aportes.Persona" class="form-control" />
+                    <ValidationMessage For="@(() => aportes.Persona)" />
+                </div>
+
+               
+
+                @* Monto *@
+                <label><strong>Monto</strong></label>
+                <div class="input-group mb-3">
+                    <InputNumber @bind-Value="@aportes.Monto" class="form-control" />
+                    <ValidationMessage For="@(() => aportes.Monto)" />
+                </div>
+
+
+
+                <label><strong>Observacion</strong></label>
+                <div class="input-group mb-3">
+                    <InputText @bind-Value="@aportes.Observacion" class="form-control" />
+                    <ValidationMessage For="@(() => aportes.Observacion)" />
+                </div>
+
+
+                @* Fecha *@
+                <label><strong>Fecha</strong></label>
+                <div class="input-group mb-3">
+                    <InputDate @bind-Value="@aportes.DateTime" class="form-control" />
+                    <ValidationMessage For="@(() => aportes.DateTime)" />
+                </div>
+
+                @* Mensaje de error *@
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger mt-2">
+                        <strong>Error:</strong> @ErrorMessage
+                    </div>
+                }
+            </div>
+
+            @* Footer *@
+            <div class="card-footer d-flex justify-content-center">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-success">@TextoBoton</button>
+                    <a href="/Aportes/IndexAportes" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Volver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+
+
+
+
+
+
+
+@code {
+
+
+    [Parameter] public int AporteId { get; set; }
+    public Aportes aportes { get; set; } = new Aportes();
+    public string ErrorMessage { get; set; } = string.Empty;
+    string TextoBoton = string.Empty;
+    string Titulo = string.Empty;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AporteId != 0)
+        {
+            aportes = await aportesService.Buscar(AporteId);
+            TextoBoton = "Actualizar Aporte";
+            Titulo = "Editar sistema";
+        }
+        else
+        {
+            TextoBoton = "Registrar Aporte";
+            Titulo = "Nuevo Aporte";
+        }
+
+    }
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            if (await aportesService.Guardar(aportes))
+            {
+                aportes = new Aportes(); 
+                navigationManager.NavigateTo("/Aportes/IndexAportes");
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception)
+        {
+            ErrorMessage = "Ocurrió un error inesperado. Por favor, intenta nuevamente.";
+        }
+    }
+
+
+
+
+}

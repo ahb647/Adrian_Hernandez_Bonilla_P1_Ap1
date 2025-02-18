@@ -9,11 +9,13 @@ using Adrian_Hernandez_Bonilla_P1_Ap1.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
+builder.Services.AddRazorPages();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-var app = builder.Build();
+
 
 
 
@@ -26,8 +28,10 @@ builder.Services.AddDbContextFactory<Contexto>(options =>
 
 
 
-builder.Services.AddScoped<Service>();
+builder.Services.AddScoped<AportesService>();
+builder.Services.AddBlazorBootstrap();
 
+var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
